@@ -280,12 +280,12 @@ CALL TestProc ( );
 			SELECT COUNT(orderNumber) INTO C
 			FROM orders 
 			WHERE orderNumber = orderNo;
-			SELECT c ;
+			-- SELECT c ;
 			-- check if orderNumber exists
 			IF(C != 1) THEN 
 				SIGNAL SQLSTATE '45000'   -- User defined exception
 					SET MESSAGE_TEXT = 'Order No not found in orders table';
-                 SET result := 'Checking - Failed';
+                 -- SET result := 'Checking - Failed';
 			else
                 SET result := 'Order details are found in orders table';
 			END IF;
@@ -294,8 +294,11 @@ CALL TestProc ( );
         
         DELIMITER ;
         -- ------------------------
+        SET @result="";
         CALL AddOrderItem(104251,'S10_1678',1,95.7,1, @result);
         select @result;
+        
+        SHOW ERRORS; -- When error comes
         -- ---
         /*First, it counts the orders with the input order number that we pass to the stored procedure.
 		Second, if the number of order is not 1, it raises an error with  SQLSTATE 45000 along with an error message saying that order number does not exist in the orders table.
@@ -305,7 +308,7 @@ CALL TestProc ( );
         -- -------------------------------------------------
         
 #### Example: 7:::: - SP changes the error message before issuing it to the caller. 
-	USE sample;	
+	USE example;	
         DELIMITER $$
 
 		CREATE PROCEDURE Divide(IN numerator INT, IN denominator INT, OUT result double)
@@ -324,11 +327,11 @@ CALL TestProc ( );
         
 		Delimiter ;
 -- --------
-CALL Divide(10,3,@result);
+CALL Divide(10,0,@result);
 SELECT @result;
 -- -----------------------------------------------------
 ##### Example: 8  --- SQLSTATE
-
+Drop procedure ageCheck;
 DELIMITER $$
 CREATE PROCEDURE ageCheck(age INT)
 BEGIN
@@ -354,7 +357,7 @@ DELIMITER ;
 
 -- -----------------------------------------------
 -- Call to the procedure
-CALL ageCheck(0);   -- 
+CALL ageCheck(34);   -- 
 
 DROP PROCEDURE ageCheck;
 
